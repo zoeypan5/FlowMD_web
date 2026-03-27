@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+    .gallery-header-bg {
+        background-color: #FAF8F5;
+        padding: 100px 0 50px;
+        margin-bottom: 3rem;
+        border-bottom: 1px solid rgba(0,0,0,0.03);
+    }
+    .hero-title {
+        font-family: "Optima", "Candara", sans-serif;
+        font-weight: 300;
+        font-size: 3rem;
+        letter-spacing: 8px;
+        color: #9b8e83;
+        text-transform: uppercase;
+        margin-top: 15px;
+        margin-bottom: 0;
+    }
+    .hero-subtitle {
+        font-size: 0.65rem;
+        letter-spacing: 4px;
+        color: #b5a495;
+        text-transform: uppercase;
+        display: block;
+    }
+
+    .gallery-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 20px 40px; }
+
+    .masonry-grid { width: 100%; }
+
+    .grid-item { width: 33.333%; padding: 15px; float: left; box-sizing: border-box; }
+    .case-card-gal { background: white; padding: 15px; border: 1px solid #eee; cursor: zoom-in; transition: 0.3s; }
+    .img-container-gal { position: relative; width: 100%; background: #fcfcfc; overflow: hidden; display: flex; align-items: center; }
+    .img-container-gal img { width: 100%; height: auto; display: block; transition: opacity 0.6s ease; }
+
+    .before-gal { position: absolute; top: 0; left: 0; opacity: 0; z-index: 2; }
+    .case-card-gal:hover .before-gal { opacity: 1; }
+
+    @media (max-width: 768px) {
+        .grid-item { width: 100% !important; padding: 10px 0; float: none; }
+        .img-container-gal { max-height: none; } /* 允许手机端根据图片比例自动撑开 */
+        .gallery-header-bg { padding: 60px 0 40px; }
+        .hero-title { font-size: 2.2rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="gallery-header-bg">
+    <div class="container text-center">
+        <span class="hero-subtitle">Visual Documentation</span>
+        <h1 class="hero-title">Case Archive</h1>
+    </div>
+</div>
+
+<div class="gallery-wrapper">
+    <div class="masonry-grid">
+        {% for case in cases %}
+        <div class="grid-item">
+            <div class="case-card-gal" onclick="openComparisonLightbox('{{ url_for('static', filename='uploads/' + case.before_img) }}', '{{ url_for('static', filename='uploads/' + case.after_img) }}')">
+                <div class="img-container-gal shadow-sm">
+                    <img src="{{ url_for('static', filename='uploads/' + case.before_img) }}" class="before-gal" loading="lazy">
+                    <img src="{{ url_for('static', filename='uploads/' + case.after_img) }}" class="after-gal" loading="lazy">
+                </div>
+                <div style="font-size:0.75rem; text-transform:uppercase; text-align:center; margin-top:15px;">{{ case.title }}</div>
+                <div style="font-size:0.65rem; color:#999; text-align:center; margin-top:5px; word-wrap:break-word;">{{ case.description }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var grid = document.querySelector('.masonry-grid');
+
+        imagesLoaded(grid, function() {
+            new Masonry(grid, {
+                itemSelector: '.grid-item',
+                columnWidth: '.grid-item',
+                percentPosition: true,
+                horizontalOrder: true
+            });
+        });
+    });
+</script>
+{% endblock %}
